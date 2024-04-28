@@ -1,5 +1,4 @@
-﻿using System;
-using HutongGames.PlayMaker;
+﻿using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
 using MSCLoader;
 using UnityEngine;
@@ -12,6 +11,7 @@ namespace MSCWaterBills
 {
     public class WaterBills : Mod
     {
+        public override string Name => "Water Bills";
         public override string ID => "waterbills";
         public override string Version => "1.0";
         public override string Author => "アカツキ";
@@ -31,13 +31,15 @@ namespace MSCWaterBills
             SaveLoad.WriteValue(this, "WaterLitres", _litres.Value);
         }
 
+        private SettingsSlider _costPerLiter;
+        private SettingsSlider _combustionTap;
+        private SettingsSlider _combustionShower;
 
         public override void ModSettings()
         {
             base.ModSettings();
 
 #if DEBUG
-
             Settings.AddButton(this, "DEBUG Set WaterBillsPaid True", () => { _waterBillsPaid.Value = true; });
             Settings.AddButton(this, "DEBUG Set WaterBillsPaid False", () => { _waterBillsPaid.Value = false; });
             Settings.AddButton(this, "DEBUG Set timer to 10", () => { _timer.Value = 10; });
@@ -46,29 +48,36 @@ namespace MSCWaterBills
             Settings.AddButton(this, "DEBUG Add 100L", () => { _litres.Value += 100; });
 
 #endif
+
+            _costPerLiter = Settings.AddSlider(this, "costperl", "Cost Per Litre", 5f, 15, 11);
+            Settings.AddText(this,
+                "<color=red>WARNING: Changing the value above is not possible after the game is loaded.</color>");
+
+            _combustionTap = Settings.AddSlider(this, "combustiontap", "Combustion Tap Multiplier", 1, 10, 1f);
+            _combustionShower = Settings.AddSlider(this, "combustionshower", "Combustion Shower Multiplier", 1, 10, 2f);
         }
 
-        private FsmBool _waterBillsPaid = new FsmBool("WaterBillsPaid")
+        private readonly FsmBool _waterBillsPaid = new FsmBool("WaterBillsPaid")
         {
             Value = true
         };
 
-        private FsmFloat _timer = new FsmFloat("WaterCutTimer")
+        private readonly FsmFloat _timer = new FsmFloat("WaterCutTimer")
         {
             Value = 50400f
         };
 
-        private FsmFloat _cost = new FsmFloat("Cost")
+        private readonly FsmFloat _cost = new FsmFloat("Cost")
         {
             Value = 11
         };
 
-        private FsmFloat _litres = new FsmFloat("Litres")
+        private readonly FsmFloat _litres = new FsmFloat("Litres")
         {
             Value = 0
         };
 
-        private FsmFloat _litresCalc = new FsmFloat("LitresCalc")
+        private readonly FsmFloat _litresCalc = new FsmFloat("LitresCalc")
         {
             Value = 0
         };
@@ -79,6 +88,12 @@ namespace MSCWaterBills
 
         private void Mod_Load()
         {
+            if (!SaveLoad.ValueExists(this, "WaterCost"))
+                SaveLoad.WriteValue(this, "WaterCost", _costPerLiter.GetValue());
+
+            var waterCost = SaveLoad.ReadValue<float>(this, "WaterCost");
+            _cost.Value = waterCost;
+
             var go = new GameObject("WaterBills");
             var fsm = go.AddComponent<PlayMakerFSM>();
             fsm.FsmName = "WaterBillsMgr";
@@ -133,8 +148,14 @@ namespace MSCWaterBills
                 floatValue = 50400
             });
 
+            payFsmPay.InsertAction(3, new SetFloatValue()
+            {
+                floatVariable = _litres,
+                floatValue = 0
+            });
+
             waterBill.SetActive(false);
-            _envelope = GameObject.Instantiate(GameObject.Find("YARD").C(4).C(1));
+            _envelope = Object.Instantiate(GameObject.Find("YARD").C(4).C(1));
             _envelope.name = "EnvelopeWaterBill";
             _envelope.transform.parent = GameObject.Find("YARD").C(4).transform;
             _envelope.transform.localPosition = new Vector3(0.014f, -0.0026f, 0.1807f);
@@ -167,13 +188,13 @@ namespace MSCWaterBills
 
         private void Mod_Update()
         {
-            _timer.Value -= Time.deltaTime * (_litres.Value / 1000);
+            _timer.Value -= Time.deltaTime * Mathf.Max(1, _litresCalc.Value / 1000);
             _waterBillsPaid.Value = _timer.Value > 0;
             _envelope.SetActive(_timer.Value < 21600);
 
-            if (_kitchenTap.Value) _litres.Value += Time.deltaTime / 5;
-            if (_bathroomShower.Value) _litres.Value += Time.deltaTime / 2;
-            if (_bathroomTap.Value) _litres.Value += Time.deltaTime / 5;
+            if (_kitchenTap.Value) _litres.Value += (Time.deltaTime / 5) * _combustionTap.GetValue();
+            if (_bathroomShower.Value) _litres.Value += (Time.deltaTime / 5) * _combustionShower.GetValue();
+            if (_bathroomTap.Value) _litres.Value += (Time.deltaTime / 5) * _combustionTap.GetValue();
 
             _litresCalc.Value = _litres.Value * _cost.Value;
         }

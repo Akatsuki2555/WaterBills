@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSCWaterBills", "MSCWaterBills\MSCWaterBills.csproj", "{EA7A51F1-60D0-40F5-A5AD-F4AE81B0EADA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EA7A51F1-60D0-40F5-A5AD-F4AE81B0EADA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA7A51F1-60D0-40F5-A5AD-F4AE81B0EADA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA7A51F1-60D0-40F5-A5AD-F4AE81B0EADA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA7A51F1-60D0-40F5-A5AD-F4AE81B0EADA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,9 @@
+﻿# intellij
+.idea/
+
+# visual studio
+.vs/
+
+# build
+MSCWaterBills/obj/
+MSCWaterBills/bin/

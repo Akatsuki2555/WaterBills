@@ -13,7 +13,7 @@ namespace MSCWaterBills
     {
         public override string Name => "Water Bills";
         public override string ID => "waterbills";
-        public override string Version => "1.0";
+        public override string Version => "1.0.1";
         public override string Author => "アカツキ";
 
         public override void ModSetup()
@@ -58,7 +58,7 @@ namespace MSCWaterBills
 
             Settings.AddButton(this, "Author Socials", () =>
             {
-                Application.OpenURL("https://akatsuki.codeberg.page/");
+                Application.OpenURL("https://akatsuki.nekoweb.org/");
             });
 
             Settings.AddButton(this, "Join my Discord server", () =>
@@ -67,7 +67,7 @@ namespace MSCWaterBills
                     "This Discord server is LGBTQ+ inclusive and has strict rules. If you are not happy with that, kindly press no.",
                     () =>
                     {
-                        Application.OpenURL("https://akatsuki.codeberg.page/discord");
+                        Application.OpenURL("https://akatsuki.nekoweb.org/discord");
                     });
             });
         }

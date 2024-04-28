@@ -55,6 +55,21 @@ namespace MSCWaterBills
 
             _combustionTap = Settings.AddSlider(this, "combustiontap", "Combustion Tap Multiplier", 1, 10, 1f);
             _combustionShower = Settings.AddSlider(this, "combustionshower", "Combustion Shower Multiplier", 1, 10, 2f);
+
+            Settings.AddButton(this, "Author Socials", () =>
+            {
+                Application.OpenURL("https://akatsuki.codeberg.page/");
+            });
+
+            Settings.AddButton(this, "Join my Discord server", () =>
+            {
+                ModUI.ShowYesNoMessage(
+                    "This Discord server is LGBTQ+ inclusive and has strict rules. If you are not happy with that, kindly press no.",
+                    () =>
+                    {
+                        Application.OpenURL("https://akatsuki.codeberg.page/discord");
+                    });
+            });
         }
 
         private readonly FsmBool _waterBillsPaid = new FsmBool("WaterBillsPaid")
